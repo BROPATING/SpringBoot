@@ -1,0 +1,323 @@
+IOC: hand over the responsibility of managing the lifecycle of objects to a framework (in this case, the Spring IoC Container).
+Control is shifted from the developer to the framework.
+Ex. You go to a restaurant and order a burger. The kitchen (the container) handles sourcing the ingredients, cooking,
+and serving it to you. You just consume it.
+
+DI: DI is the design pattern used to achieve IoC (How it's happening: Dependencies are passed into the object externally).
+Dependency Injection is simply the concrete mechanism used to implement IoC.
+Ex. If Class A needs Class B to function, Class B is a "dependency" of Class A. Instead of Class A creating Class B itself,
+the Spring Container injects (passes) the instance of Class B into Class A.
+```
+@Component
+   public class Car {
+       private final Engine engine;
+
+       // Spring automatically "injects" the Engine bean here
+       @Autowired
+       public Car(Engine engine) {
+           this.engine = engine;
+       }
+
+       public void start() {
+           engine.run();
+       }
+   }
+```
+Benefits:
+    Loose Coupling : without creating the new object of the class for this using ApplicationContext
+    Easier Testing
+    Loose Coupling
+
+Types:
+    Constructor: using constructor
+    Setter: using method
+    field injection: Loose coupling
+
+TomCat
+Definition: Tomcat is a free, open-source Web Server built specifically to run Java-based web applications.
+
+The Analogy: It is to Java what Node.js is to JavaScript. It listens for web traffic and runs your backend code.
+
+Here is the formatted table, ready for you to copy and paste:
+
+Feature               | Spring Framework                                                                 | Spring Boot
+----------------------|----------------------------------------------------------------------------------|---------------------------------------------------------------------------------
+
+What is it?           | A massive, open-source framework used to build Java applications.                | An extension of Spring designed to make building applications faster and easier.
+
+Primary Focus         | Provides core features like Dependency Injection (DI) and Inversion of Control.  | Focuses on rapid development and reducing configuration time.
+
+Configuration         | Manual. Requires writing extensive configuration code (XML or Java configs).     | Automatic. Uses Auto-Configuration to detect and configure based on project files.
+
+Server                | No built-in server. Must install and deploy to an external server (e.g., Tomcat).| Comes with an embedded server (e.g., Tomcat). Just run the app directly.
+
+Dependencies          | Manually manage compatible versions in pom.xml.                                  | Provides Starter Dependencies (e.g., spring-boot-starter-web) that bundle everything automatically.
+
+Boilerplate Code      | Requires repetitive setup/boilerplate code to get a basic app running.           | Eliminates boilerplate so you can focus on writing business logic immediately.
+
+The Golden Rule for your notes: > Spring is the engine. Spring Boot is the smart car built 
+around that engine so you don't have to assemble the parts yourself.
+
+Go to spring.io
+select the dependency 
+    spring web
+than click on generate 
+before that you can see the explore
+
+SpringApplication.run(MyApplication.class, args);
+    That line of code is the ignition switch of your entire Spring Boot application.
+    It tells Java: "Hey, pass control over to Spring Boot so it can start its magic."
+
+Now class Dev has build funtion
+so in MyApplication.java we want don't want to create the object of that class but we need to call it 
+for this purpose we use ApplicationContext
+
+ApplicaionContext context = SpringApplication.run(MyApplication.class, args);
+Dev obj = context.getBean(Dev.class);
+obj.build();
+
+ApplicationContext is the brain of your application. It is the container that creates, configures, and manages all the objects (called Beans) in your program.
+Instead of you manually creating objects using the new keyword, the ApplicationContext handles them for you. This is the core of Inversion of Control (IoC).
+
+The Lifecycle of the ApplicationContext
+When you run SpringApplication.run(), the ApplicationContext is born and does the following:
+Scans: It looks through your project for classes marked with @Component, @Service, @Repository, or 
+    @RestController.
+Creates (Instantiates): It creates instances (objects) of those classes. These managed objects are 
+    called Beans.
+Injects (Wires): If Class A needs Class B (using @Autowired), the ApplicationContext automatically injects
+    Class B into Class A.
+Destroys: When you shut down your application, it cleanly destroys all the objects and frees up memory.
+
+Field Injection
+@Autowire
+    It tells the Spring ApplicationContext: "Hey, this class needs another class to do its job. 
+    Please find that object in your container and plug it in here automatically."
+
+Constructor Injection
+private final CarService carService;
+@Autowired // Optional in newer Spring versions if there is only one constructor
+public CarController(CarService carService) {
+    this.carService = carService;
+}
+
+Setter Injection
+private CarService carService;
+@Autowired
+public void setCarService(CarService carService) {
+    this.carService = carService;
+}
+
+@Component is a marker annotation. It tells the Spring ApplicationContext: "Hey, this is a special Java class that you need to manage. Please create an instance (a Bean) of this class and keep it in your container."
+
+When we use two class implementing the one class 
+ex. Computer has two child Desktop and laptop so now both have @Component
+so we it's being confusing using which class for that purpose we use @Primary
+
+@Primary
+It is used when you have multiple beans of the same type, and Spring gets confused about which one it should automatically inject (@Autowired). By placing @Primary on one of those classes, you tell Spring: "If you have to choose between multiple options, make this one your default choice."
+
+What if not use the @Primary
+so for this we use @Qualifier 
+
+@Qualifier
+While @Primary sets a global default choice when multiple beans of the same type exist, 
+@Qualifier lets you manually choose exactly which bean you want at the exact spot you are injecting it.
+
+// --- PLACE ON THE COMPONENT CLASS ---
+@Component
+@Primary  <-- Here
+public class SmsNotification implements NotificationService { ... }
+
+
+// --- PLACE AT THE INJECTION POINT (CONTROLLER) ---
+@RestController
+public class NotificationController {
+
+    @Autowired
+    @Qualifier("emailService")  <-- Here
+    private NotificationService notificationService;
+}
+
+If you have a class marked as @Primary (the default), but in your Controller you use @Qualifier("somethingElse"), @Qualifier always wins.
+
+Think of @Primary as a soft recommendation, and @Qualifier as a strict demand.
+
+Maven
+    Definition: A build automation and project management tool for Java.
+    Core Purpose: It handles downloading libraries (dependencies), compiling code, running tests, 
+        and packaging the application.
+
+Spiring Framework steps: 
+    Now we create the new project Configuration
+        Catalog : Internal
+        Archetype: quickstart
+
+    Now don't have spring/spring boot frame work 
+    to add the external libraries go to the pom.xml under dependencies 
+
+    mvnrepo 
+    https://mvnrepository.com/
+
+    search the spring context then copy the dependency and paste under the denpenencies
+    so now we need to reload the pom.xml (load maven changes)
+    we don't use new ApplicationContext cause it is interface that's why we use class which use it
+    now we can use the 
+        ApplicationContext context = new ClassPathXmlApplicationContext();
+
+    ClassPathXmlApplicationContext()
+        It is a legacy class in the core Spring Framework used to create and manage the Spring 
+        Container (IoC Container).
+
+    still got error of bean factory
+    for this purpose we need to configure the xml file
+    ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+    Now go to the main folder create the directory resources if is not then
+    then create file spring.xml
+
+    your-project/
+    │
+    └── src/
+        └── main/
+            ├── java/          <-- Your .java files go here
+            └── resources/     <-- Create this folder here if it's missing!
+                └── spring.xml <-- Put your spring.xml directly inside here
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+    </beans>
+
+    Bean
+        It is simply an object that is instantiated, assembled, and managed by the Spring IoC 
+        (Inversion of Control) container.
+    
+    The XML Configuration / Annotations: The instructions you give to the factory.
+    The Spring Container: The actual automated factory.
+
+    Why use Beans instead of the new keyword?
+        The new keyword means you are responsible for creating, linking, and destroying objects.
+        Spring Beans mean Spring manages the objects, links them together automatically, and saves 
+        memory by sharing them.
+    
+    Now search for spring 6 bean configuration xml
+    <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+        <bean id="dev" class="com.BROPATING.Dev">
+
+        </bean>
+    </beans>
+
+    Dev obj = (Dev) context.getBean("dev");
+    OR
+    Dev dev = context.getBean("dev", Dev.class);
+    obj.build();
+
+    Now for creating any new class so need to configure in the spring.xml
+    <bean id="dev" class="com.BROPATING.Dev">
+
+    </bean>
+    <bean id="dev1" class="com.BROPATING.Dev">
+
+    </bean>
+    <bean id="laptop" class="com.BROPATING.Laptop">
+
+    </bean>
+
+    if we need such that spring injects the value 
+    then consider that dev class has
+    class Dev{
+        private int age;
+        // Spring demands this exact setter method to inject the 'value'
+        public void setAge(int age) {
+            this.age = age;
+        } 
+    }
+    then go to the bean and set the default value
+    <bean id="dev" class="com.BROPATING.Dev">
+        <property name="age" value="18" />
+    </bean>
+
+    not for the dev1 cause we are not assigning to the dev1 bean
+
+    Now the above method is for the setter now if we want to use the constructor then
+    class Dev{
+        private int age;
+        public Dev(int age){ this.age = age; }
+    }
+    <bean id="dev" class="com.BROPATING.Dev">
+        <constructor-arg value="14" />  ---> for single value in parametrised constructor
+        <constructor-arg name="age" value="14" />  ---> for specific value
+        <constructor-arg index="0" type="int" value="14" />  ---> considering the 1st index 
+    </bean>
+
+    Now for the class how we get it down
+    class Dev{
+        private Laptop laptop;
+        public void setLap(Laptop laptop) {
+            this.laptop = laptop;
+        }
+    }
+    
+    <bean id="dev" class="com.BROPATING.Dev">
+        <property name="lap" ref="lap1" />
+    </bean>
+    <bean id="lap1" class="com.BROPATING.Laptop">
+    </bean>
+
+    catch 
+        public void setLaptop(...)	<property name="laptop" ... />
+        public void setLap(...)	<property name="lap" ... />
+        public void setL2(...)	<property name="l2" ... />
+        public void setMyAwesomeScreen(...)	<property name="myAwesomeScreen" ... />
+
+    package com.BROPATING;
+    class Dev {
+        private Laptop laptop;
+        public Dev(Laptop laptop) {
+            this.laptop = laptop;
+        }
+    }
+    <bean id="dev" class="com.BROPATING.Dev">
+        <constructor-arg ref="lap1" />
+    </bean>
+
+    <bean id="lap1" class="com.BROPATING.Laptop">
+    </bean>
+
+    Parameterised Constructor 
+    class Dev {
+        private int age;
+        private String name;
+        private Laptop laptop;
+
+        // Multi-parameter constructor
+        public Dev(int age, String name, Laptop laptop) {
+            this.age = age;
+            this.name = name;
+            this.laptop = laptop;
+        }
+    }
+    <bean id="dev" class="com.BROPATING.Dev">
+        <constructor-arg index="0" value="22" />
+        <constructor-arg index="1" value="Alex" />
+        <constructor-arg index="2" ref="lap1" />
+    </bean>
+    OR 
+    <bean id="dev" class="com.BROPATING.Dev">
+        <constructor-arg name="age" value="22" />
+        <constructor-arg name="name" value="Alex" />
+        <constructor-arg name="laptop" ref="lap1" />
+    </bean>
+    OR
+    <bean id="dev" class="com.BROPATING.Dev">
+        <constructor-arg type="int" value="22" />
+        <constructor-arg type="java.lang.String" value="Alex" />
+        <constructor-arg type="com.BROPATING.Laptop" ref="lap1" />
+    </bean>
+
+Autowiring in Spring
+    
