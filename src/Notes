@@ -26,7 +26,7 @@ the Spring Container injects (passes) the instance of Class B into Class A.
 Benefits:
     Loose Coupling : without creating the new object of the class for this using ApplicationContext
     Easier Testing
-    Loose Coupling
+    DI
 
 Types:
     Constructor: using constructor
@@ -319,5 +319,138 @@ Spiring Framework steps:
         <constructor-arg type="com.BROPATING.Laptop" ref="lap1" />
     </bean>
 
-Autowiring in Spring
+    Autowiring in Spring
+        Now we make two class Desktop and Laptop with function compile() the interface Computer i.e using implements
+        than in class Dev 
+        private Computer comp;
+        public void build(){
+            comp.compile();
+        }
+        setter and getter of comp
+        Now in class App
+        ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+        Dev obj = context.getBean("dev");
+        obj.build();
+        Now in spring.xml
+            <bean id="dev" class="com.BROPATING.Dev">
+                <property name="comp" ref="lap"/>
+            </bean>
+            <bean id="desk" class="com.BROPATING.Desktop">
+                
+            </bean>
+            <bean id="lap" class="com.BROPATING.Laptop">
+                
+            </bean>
+
+        --- OR ---
+
+            <bean id="dev" class="com.BROPATING.Dev" autowire="byType">
+                <!-- <property name="comp" ref="lap"/> -->
+            </bean>
+
+            <bean id="desk" class="com.BROPATING.Desktop" primary="true"/>
+
+            <bean id="lap" class="com.BROPATING.Laptop" /> 
+        
+Need for spring boot
+    Spring Framework = Powerful but heavy, manual setup.
+    Spring Boot = Lightweight, auto-configured, fast development, production-ready.
+
+Servlets
+    Servlets in Java are server-side Java programs that handle client requests (like HTTP GET/POST), process them, and 
+    generate dynamic responses. They run inside a web container (e.g., Tomcat) and form the backbone of Java web applications.
+LifeCycle of servlet 
+    Init = setup, Service = request handling, Destroy = cleanup.
+
+Spring Boot Web
+
+    Go to start.spring.io
+    install dependency 
+        spring web -> Build web apps & REST APIs.
+        spring boot devTools -> Faster development with auto-restart & live reload.
+    Generate then open that zip folder 
+    we make a class called as HomeController
+        @Controller
+        public class HomeController {
+            @RequestMapping("/home")
+            @ResponseBody
+            public String homePage() {
+                return "home";
+            }
+        }
+
+        OR 
+
+        @RestController
+        public class HomeController {
+            @RequestMapping("/home")
+            public String homePage() {
+                return "home";
+            }
+        }
+
+
+[ Client / Postman ] 
+        │  ▲
+   HTTP │  │ JSON
+        ▼  │
+ ┌──────────────────────┐
+ │ Controller Layer     │  <-- Handles HTTP Requests (@RestController)
+ └──────────────────────┘
+        │  ▲
+        ▼  │
+ ┌──────────────────────┐
+ │ Service Layer        │  <-- Business Logic & Rules (@Service)
+ └──────────────────────┘
+        │  ▲
+        ▼  │
+ ┌──────────────────────┐
+ │ Repository Layer     │  <-- Talks to Database (@Repository)
+ └──────────────────────┘
+        │  ▲
+        ▼  │
+ [ Database (H2/MySQL) ]
     
+    Display the "Home" word
+    @RestController
+    public class HomeApiController {
+
+        // Test this by going to: http://localhost:8080/api/home
+        @GetMapping("/api/home")
+        public String homePage() {
+            return "home"; // The browser screen will literally just display the word: home
+        }
+    }
+
+    Look for the file home.html
+    @Controller
+    public class HomeWebController {
+
+        // Test this by going to: http://localhost:8080/home
+        @GetMapping("/home")
+        public String homePage() {
+            return "home"; // This looks for a file named "home.html" inside your templates folder
+        }
+    }
+
+Spring MVC and Layers
+        @RestController
+        @RequestMapping("/api")
+        public class Login{
+            @GetMapping("/login")
+            public String login(){
+                return "Login Page";
+            }
+        }
+
+        @RestController
+        @RequestMapping("/prducts")
+        public class ProductController{
+            @GetMapping("/getProd")
+            public String getProduct(){
+                return "";
+            }
+        }
+
+
+

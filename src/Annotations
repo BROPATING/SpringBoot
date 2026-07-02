@@ -1,0 +1,57 @@
+@Primary
+@Qualifier
+@Autowire
+@Component
+@Controller ---> Used for traditional web applications. It returns a web page (HTML/View).
+@RestController ---> Used for modern APIs. It returns raw data (JSON or XML) directly to the body of the HTTP response.
+    @RestController = @Controller + @ResponseBody
+@RequestMapping = It maps an incoming web request (URL) to a specific Java method in your code.
+    @GetMapping = Fetch data (Read) = @RequestMapping(value = "/profile", method = RequestMethod.GET)
+    @PostMapping = Send new data (Create) = @RequestMapping(value = "/profile", method = RequestMethod.POST)
+    @PutMapping = Update existing data (Update) = @RequestMapping(value = "/path", method = RequestMethod.PUT)
+    @DeleteMapping = Remove data (Delete) = @RequestMapping(value = "/profile", method = RequestMethod.DELETE)
+
+LomBok
+    Its sole purpose is to eliminate boilerplate code—the repetitive, tedious lines of code that Java forces you to write 
+    but adds no real logic (like getters, setters, constructors, and toString() methods).
+
+        without LomBok
+        public class User {
+            private Long id;
+            private String name;
+            private String email;
+
+            // Boilerplate Constructor
+            public User(Long id, String name, String email) {
+                this.id = id;
+                this.name = name;
+                this.email = email;
+            }
+            public User() {}
+
+            // Boilerplate Getters and Setters
+            public Long getId() { return id; }
+            public void setId(Long id) { this.id = id; }
+            public String getName() { return name; }
+            public void setName(String name) { this.name = name; }
+            public String getEmail() { return email; }
+            public void setEmail(String email) { this.email = email; }
+
+            // Boilerplate toString, equals, and hashCode... (another 20 lines!)
+        }
+
+        with LomBok
+        import lombok.Data;
+
+        import lombok.Data;
+        import lombok.NoArgsConstructor;
+        import lombok.AllArgsConstructor;
+
+        @Data                // Automatically generates Getters, Setters, toString, equals, and hashCode!
+        @NoArgsConstructor   // Automatically generates a blank constructor: public User() {}
+        @AllArgsConstructor  // Automatically generates a full constructor with all fields
+        public class User {
+            private Long id;
+            private String name;
+            private String email;
+        }
