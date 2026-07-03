@@ -445,9 +445,10 @@ Spring MVC and Layers
 
         @RestController
         @RequestMapping("/api")
+        @RequiredArgsConstructor // Automatically creates the constructor for final fields (Replaces @Autowired)
         public class ProductController{
 
-            @Autowired
+            // @Autowired
             private ProductService prodServe;
 
             @GetMapping("/products")
@@ -460,9 +461,26 @@ Spring MVC and Layers
                 return prodServe.getProdById(prodId);
             }
 
+            // While this works, passing object values as query parameters (/api/products?id=4&name=mug&price=150) is a 
+            // poor REST API design choice. If your product model grows to include 15 fields, your method 
+            // signature will become unmanageable.
+            // @PostMapping("/products")
+            // public Product addProduct(@RequestParam int id, @RequestParam String name, @RequestParam int price){
+            //     return prodServe.addProd(id, name, price);
+            // }
             @PostMapping("/products")
-            public Product addProduct(@RequestParam int id, @RequestParam String name, @RequestParam int price){
-                return prodServe.addProd(id, name, price);
+            public Product addProduct(@RequestBody Product prod) {
+                return prodServe.addProd(prod);
+            }
+
+            @PutMapping("/products")
+            public Product updateProduct(@RequestBody Product prod){
+                return prodServe.updateProd(prod);
+            }
+
+            @DeleteMapping("/products/{id}")
+            public String removeProduct(@PathVariable int id){
+                return prodServe.deleteProd(id);
             }
         }
 
@@ -483,7 +501,9 @@ Spring MVC and Layers
         @Service 
         public class ProductService{
             //Dummy Data
-            List<Product> products = new ArrayList<>();
+            // List<Product> products = new ArrayList<>();
+            // CopyOnWriteArrayList makes your in-memory dummy data safely thread-safe for concurrent users
+            private final List<Product> products = new CopyOnWriteArrayList<>();
 
             public ProductService(){
                 products.add(new Product(1, "Hide&Seek", 30));
@@ -492,12 +512,13 @@ Spring MVC and Layers
             }
 
             public List<Product> getAllProd(){
+                System.out.println("List of products: "+products);
                 return products;
             }
 
             public Product getProdById(int prodId){
                 return products.stream()
-                        .filter(p -> p.getProdId() == prodId) // p.getProdId in Product we use setter and getter in form of @Data
+                        .filter(p -> p.getProdId() == prodId) // p.getProdId() in Product we use setter and getter in form of @Data
                         .peek(p -> System.out.println("Product Found: "+p))
                         .findFirst()
                         .orElseThrow(() -> new ResponseStatusException(
@@ -528,18 +549,69 @@ Spring MVC and Layers
                 // );
             }
 
-            public Product addProd(int id, String name, int price){
+            // public Product addProd(int id, String name, int price){
+            //     boolean idExist = products.stream()
+            //                         .anyMatch(p -> p.getProdId() == id);
+            //     if(idExist) {
+            //         throw new ResponseStatusException(
+            //             HttpStatus.CONFLICT, "Product with ID " + id + " already exists."
+            //         );
+            //     }
+            //     Product newProd = new Product(id, name, price);
+            //     products.add(newProd);
+            //     System.out.println("Successfully Added: "+newProd);
+            //     return newProd;
+            // }
+            public Product addProd(Product newProd){
                 boolean idExist = products.stream()
-                                    .anyMatch(p -> p.getProdId() == id);
-                if(idExist) {
+                                    .anyMatch(p -> p.getProdId() == newProd.getProdId());
+        
+                if (idExist) {
                     throw new ResponseStatusException(
-                        HttpStatus.CONFLICT, "Product with ID " + id + " already exists."
+                            HttpStatus.CONFLICT, "Product with ID " + newProd.getProdId() + " already exists."
                     );
                 }
-                Product newProd = new Product(id, name, price);
                 products.add(newProd);
-                System.out.println("Successfully Added: "+newProd);
+                System.out.println("Successfully Added: " + newProd);
                 return newProd;
+            }
+
+            public Product updateProd(Product prod){
+                Product targetProduct = products.stream()
+                                            .filter(p -> p.getProdId() == prod.getProdId())
+                                            .findFirst()
+                                            .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND, "Product with ID " + prod.getProdId() + " Not Found"
+                                            ));
+                targetProduct.setName(prod.getName());
+                targetProduct.setPrice(prod.getPrice());
+                System.out.println(targetProduct + "  Updated Successfully.");
+                return targetProduct;
+            }
+
+            public String deleteProd(int id){
+                // Product removeProduct = products.stream()
+                //                             .filter(p -> p.getProdId() == id)
+                //                             .findFirst()
+                //                             .orElseThrow(new ResponseStatusException(
+                //                                 HttpStatus.NOT_FOUND, "Product with ID "+ id +" Not Found."
+                //                             ));
+                // products.remove(removeProduct);
+                // return removeProduct + " Deleted Successfully";
+
+                // OR
+
+                boolean isExist = products.stream()
+                                    .anyMatch(p -> p.getProdId() == id);
+
+                if(!isExist){
+                    throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Product with ID "+ id +" Not Found."
+                    );
+                }
+                products.removeIf(p -> p.getProdId() == id);
+                System.out.println("Product with ID "+ id+ " Removed Successfully");
+                return "Product with ID " + id + " deleted successfully.";
             }
         }
         
@@ -559,8 +631,4 @@ Spring MVC and Layers
             └── Product.java
 
         Now Check to the PostMan
-
-
-        
-
 
