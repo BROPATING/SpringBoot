@@ -55,3 +55,38 @@ LomBok
             private String name;
             private String email;
         }
+@Service ---> 
+    Used to mark a class as the place where your business logic lives.
+    It tells Spring: "Hey, this class is a specialized component that calculates, processes, and manages 
+    data for the application. Please take control of it."
+    Why?
+        Keep Controllers Clean: Controllers should only handle web requests and status codes. 
+            They shouldn't do math or database calculations.
+        Reusability: If you write logic inside a @Service, you can reuse that exact same logic for a web browser request, 
+            a mobile app request, or a scheduled background task.
+        Component Scanning: By putting @Service at the top, Spring automatically finds the class when your app starts up, 
+            creates an instance of it, and shares it wherever it's needed (Dependency Injection).
+
+Status Codes: 
+    Error in server 500 series
+        500 Internal Server Error
+        502 Bad Gateway
+        503 Service Unavailable
+        504 Gateway Timeout
+    Error in resources 400 series
+        400 Bad Request
+        401 Unauthorized
+        403 Forbidden
+        404 Not Found
+        405 Method Not Allowed
+        409 Conflict
+        422 Unprocessable Entity
+        429 Too Many Requests
+    Error in somewhere else 
+        301 Moved Permanently
+        302 Found
+        304 Not Modified
+    Everything is good 200 series
+        200 OK
+        201 Created
+        204 No Content

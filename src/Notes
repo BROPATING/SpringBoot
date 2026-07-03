@@ -436,7 +436,7 @@ Spring Boot Web
 Spring MVC and Layers
         @RestController
         @RequestMapping("/api")
-        public class Login{
+        public class LoginController{
             @GetMapping("/login")
             public String login(){
                 return "Login Page";
@@ -444,13 +444,123 @@ Spring MVC and Layers
         }
 
         @RestController
-        @RequestMapping("/prducts")
+        @RequestMapping("/api")
         public class ProductController{
-            @GetMapping("/getProd")
-            public String getProduct(){
-                return "";
+
+            @Autowired
+            private ProductService prodServe;
+
+            @GetMapping("/products")
+            public List<Product> getAllProduct(){
+                return prodServe.getAllProd();
+            }
+
+            @GetMapping("/products/{prodId}")
+            public Product getProductById(@PathVariable int prodId){
+                return prodServe.getProdById(prodId);
+            }
+
+            @PostMapping("/products")
+            public Product addProduct(@RequestParam int id, @RequestParam String name, @RequestParam int price){
+                return prodServe.addProd(id, name, price);
             }
         }
 
+        Now want to install the lombok
+        go to mvnrepo search for lombok project lombok
+        copy the dependency and paste to the pom.xml 
+        and then reload the maven 
+
+        @Data
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public class Product{
+            private int prodId;
+            private String name;
+            private int price;
+        }
+
+        @Service 
+        public class ProductService{
+            //Dummy Data
+            List<Product> products = new ArrayList<>();
+
+            public ProductService(){
+                products.add(new Product(1, "Hide&Seek", 30));
+                products.add(new Product(2, "Cube", 120));
+                products.add(new Product(3, "bottle", 340));
+            }
+
+            public List<Product> getAllProd(){
+                return products;
+            }
+
+            public Product getProdById(int prodId){
+                return products.stream()
+                        .filter(p -> p.getProdId() == prodId) // p.getProdId in Product we use setter and getter in form of @Data
+                        .peek(p -> System.out.println("Product Found: "+p))
+                        .findFirst()
+                        .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND, "Product with ID " + prodId + " not found"
+                        ));
+
+                // Product foundProduct = products.stream()
+                //         .filter(p -> p.getProdId() == prodId)
+                //         .findFirst()
+                //         .orElseThrow(() -> new ResponseStatusException(
+                //             HttpStatus.NOT_FOUND, "Product with ID " + prodId + " not found"
+                //         ));
+                // System.out.println("Found product: " + foundProduct);
+                // return foundProduct;
+
+                // OR 
+
+                // if not stream then 
+                // for (Product p : products) {
+                //     // 2. Check if the ID matches
+                //     if (p.getProdId() == prodId) {
+                //         return p; // Found it! Return it right away and stop looping
+                //     }
+                // }
+                // 
+                // throw new ResponseStatusException(
+                //     HttpStatus.NOT_FOUND, "Product with ID " + prodId + " not found"
+                // );
+            }
+
+            public Product addProd(int id, String name, int price){
+                boolean idExist = products.stream()
+                                    .anyMatch(p -> p.getProdId() == id);
+                if(idExist) {
+                    throw new ResponseStatusException(
+                        HttpStatus.CONFLICT, "Product with ID " + id + " already exists."
+                    );
+                }
+                Product newProd = new Product(id, name, price);
+                products.add(newProd);
+                System.out.println("Successfully Added: "+newProd);
+                return newProd;
+            }
+        }
+        
+        Now we make the package for the controller (HomeController, LoginController)
+        Similarly for the Service (PorductService) and Model(Product)
+        src/main/java/com/example/demo/
+        │
+        ├── controller/
+        │   ├── HomeController.java
+        │   ├── LoginController.java
+        │   └── ProductController.java
+        │
+        ├── service/
+        │   └── ProductService.java
+        │
+        └── model/   (or entity/)
+            └── Product.java
+
+        Now Check to the PostMan
+
+
+        
 
 
