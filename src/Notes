@@ -149,9 +149,10 @@ Maven
         and packaging the application.
 
 Spiring Framework steps: 
-    Now we create the new project Configuration
-        Catalog : Internal
-        Archetype: quickstart
+    Open IntelliJ and go to File -> New -> Project.
+    Select Maven Archetype on the left.
+    Set Catalog to Internal and select Archetype maven-archetype-quickstart.
+    Name your project, ensure the Java version matches your system, and click Create.
 
     Now don't have spring/spring boot frame work 
     to add the external libraries go to the pom.xml under dependencies 
@@ -159,7 +160,15 @@ Spiring Framework steps:
     mvnrepo 
     https://mvnrepository.com/
 
-    search the spring context then copy the dependency and paste under the denpenencies
+    search the spring context / beans then copy the dependency and paste under the denpenencies
+    <dependencies>
+        <!-- Core Spring Context Dependency -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <groupId>spring-context</groupId>
+            <version>6.1.5</version> <!-- Use any stable Spring 6 version -->
+        </dependency>
+    </dependencies>
     so now we need to reload the pom.xml (load maven changes)
     we don't use new ApplicationContext cause it is interface that's why we use class which use it
     now we can use the 
@@ -182,6 +191,12 @@ Spiring Framework steps:
             ├── java/          <-- Your .java files go here
             └── resources/     <-- Create this folder here if it's missing!
                 └── spring.xml <-- Put your spring.xml directly inside here
+    In the project navigation sidebar, go to src/main/.
+    Right-click the main folder -> New -> Directory and name it resources.
+        (If it turns into a folder with a resource-marked icon, you did it right!).
+    Right-click the new resources folder -> New -> File and name it spring.xml.
+
+    Paste the standard Spring XML container setup inside it:
     <?xml version="1.0" encoding="UTF-8"?>
     <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
