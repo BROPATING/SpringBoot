@@ -148,7 +148,7 @@ Maven
     Core Purpose: It handles downloading libraries (dependencies), compiling code, running tests, 
         and packaging the application.
 
-Spiring Framework steps: 
+Spring Framework steps:
     Open IntelliJ and go to File -> New -> Project.
     Select Maven Archetype on the left.
     Set Catalog to Internal and select Archetype maven-archetype-quickstart.
@@ -383,6 +383,7 @@ Spring Boot Web
     install dependency 
         spring web -> Build web apps & REST APIs.
         spring boot devTools -> Faster development with auto-restart & live reload.
+        LomBok - helps to reduce boilerplate code.
     Generate then open that zip folder 
     we make a class called as HomeController
         @Controller
@@ -631,7 +632,7 @@ Spring MVC and Layers
         }
         
         Now we make the package for the controller (HomeController, LoginController)
-        Similarly for the Service (PorductService) and Model(Product)
+        Similarly for the Service (ProductService) and Model(Product)
         src/main/java/com/example/demo/
         │
         ├── controller/
