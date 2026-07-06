@@ -27,13 +27,18 @@ public class CourseController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Course addCourse(Course newCourse){
+    public Course addCourse(@RequestBody Course newCourse){
         return courseService.enrollNewCourse(newCourse);
     }
 
     @PutMapping
-    public Course updateCourse(Course course){
+    public Course updateCourse(@RequestBody Course course){
         return courseService.modifyCourse(course);
+    }
+
+    @PatchMapping("/{code}")
+    public Course patchCourse(@PathVariable String code, @RequestBody Course course) {
+        return courseService.patchCourse(code, course);
     }
 
     @DeleteMapping("/{code}")

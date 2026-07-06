@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Handles the actual business logic for managing courses.
@@ -73,14 +72,27 @@ public class CourseService {
     }
 
     /**
+     * Applies a partial update to an existing course.
+     * Only fields that are explicitly provided in the request body will be changed.
+     * @param code The code of the course to update.
+     * @param partialCourse An object containing only the fields that need updating.
+     * @return The updated course object.
+     */
+    public Course patchCourse(String code, Course partialCourse){
+        Course course = fetchCourseByCode(code);
+        if(partialCourse.getTitle() != null) course.setTitle(partialCourse.getTitle());
+        if(partialCourse.getCredits() != null) course.setCredits(partialCourse.getCredits());
+        System.out.println("Patched Course: "+course);
+        return course;
+    }
+
+    /**
      * Deletes a course out of our registry completely.
      * @param code The unique course code identifier to be removed.
-     * @return The removed course data so we can verify or log what was lost.
      */
-    public Course dropCourse(String code){
+    public void dropCourse(String code){
         Course course = fetchCourseByCode(code);
         courseList.remove(course);
         System.out.println("Drop Course "+course);
-        return course;
     }
 }
