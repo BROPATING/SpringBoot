@@ -1,3 +1,23 @@
+# server:
+#   port: 9090
+
 spring:
   application:
     name: SpringBootWEB
+
+    #H2 Console COnfiguration
+    h2: 
+      console: 
+        enabled: true
+        path: /h2-console
+
+    #DataBase Connection COnfiguration
+    datasource: 
+      url: jdbc:h2:mem:testdb
+      driver-class-name: org.h2.Driver
+      username: sahil
+      password: password
+
+    #Show SQL quesries in the console
+    jpa:
+      show-sql: true
