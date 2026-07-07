@@ -15,7 +15,7 @@ public class Application {
 		ApplicationContext context = SpringApplication.run(Application.class, args);
 
 //		Dev obj = (Dev) context.getBean("dev");
-		Dev obj = context.getBean(Dev.class); // using @Primary in Car now  we define the @Qualifier in the dev for bike
+		com.BROPATING.SpringBoot.Dev obj = context.getBean(com.BROPATING.SpringBoot.Dev.class); // using @Primary in Car now  we define the @Qualifier in the dev for bike
 		obj.race();
 	}
 }
