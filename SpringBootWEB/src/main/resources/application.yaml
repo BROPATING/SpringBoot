@@ -21,3 +21,16 @@ spring:
     #Show SQL quesries in the console
     jpa:
       show-sql: true
+    
+    logging:
+      level:
+          root: info                    # Standard logs for the whole app
+          org.springframework.web: debug # Shows detailed info about incoming web requests
+    
+    management:
+      endpoints:
+          web:
+          exposure:
+              include: "health,info,metrics" # Exposes http://localhost:8080/actuator/health
+    
+    
