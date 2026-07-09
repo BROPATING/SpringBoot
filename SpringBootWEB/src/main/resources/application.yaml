@@ -6,25 +6,29 @@ spring:
     name: SpringBootWEB
 
     #H2 Console COnfiguration
-    h2: 
-      console: 
-        enabled: true
-        path: /h2-console
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
-    #DataBase Connection COnfiguration
-    datasource: 
-      url: jdbc:h2:mem:testdb
-      driver-class-name: org.h2.Driver
-      username: sahil
-      password: password
+  #DataBase Connection Configuration
+  datasource:
+#    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1 # <-- 1. Keeps the DB alive in RAM when empty
+    driver-class-name: org.h2.Driver
+    username: sahil
+    password: password
+    generate-unique-name: false               # <-- 2. Forces Spring to use 'testdb' instead of a random string
 
-    #Show SQL quesries in the console
-    jpa:
-      show-sql: true
-    
+  #Show SQL queries in the console
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
 logging:
   level:
-      root: info                    # Standard logs for the whole app
+      root: info                     # Standard logs for the whole app
       org.springframework.web: debug # Shows detailed info about incoming web requests
 
 management:
@@ -32,5 +36,3 @@ management:
       web:
       exposure:
           include: "health,info,metrics" # Exposes http://localhost:8080/actuator/health
-    
-
