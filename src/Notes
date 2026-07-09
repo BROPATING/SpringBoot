@@ -648,72 +648,88 @@ Spring MVC and Layers
 
         PostMan Check Working Sucessfully 
 
-        H2-DataBase
-            H2 is like a whiteboard. It lives entirely inside your computer's temporary memory (RAM). 
-            When you start your Spring Boot application, the whiteboard is wheeled in, clean and empty. 
-            When you stop your application, the whiteboard is completely erased.
-        Why H2?
-            Zero Installation
-            Speed
-            Perfect for Learning and Testing
+H2-DataBase
+    H2 is like a whiteboard. It lives entirely inside your computer's temporary memory (RAM). 
+    When you start your Spring Boot application, the whiteboard is wheeled in, clean and empty. 
+    When you stop your application, the whiteboard is completely erased.
+    Why H2?
+        Zero Installation
+        Speed
+        Perfect for Learning and Testing
+            
+    H2 is a lightweight, invisible database that wakes up when your Spring Boot app starts, saves your data 
+    in the computer's temporary memory while you test your APIs, and disappears
+
+        #H2 Console COnfiguration
+        h2: 
+        console: 
+            enabled: true
+            path: /h2-console
+
+        #DataBase Connection COnfiguration
+        datasource: 
+            url: jdbc:h2:mem:testdb
+            driver-class-name: org.h2.Driver
+            username: sahil
+            password: password
+
+        #Show SQL quesries in the console
+        jpa:
+            show-sql: true
+
+    console: Refers specifically to the H2 Console, which is a built-in web-based user interface used to view your tables.  
+    datasource: This section tells Spring Boot where the database is and how to log into it.
+    url: jdbc:h2:mem:testdb This is the connection string (address) of your database:
+        jdbc:h2: means use the Java Database Connectivity driver for H2.
+        :mem: means keep the database entirely in memory (RAM). (It lives and dies with the application restart).
+        :testdb is simply the name you are giving to this specific database instance.
+    driver-class-name: org.h2.Driver This tells Java the exact underlying class file it needs to load to translate 
+        Java commands into H2 database language.
+    jpa: This stands for Java Persistence API (managed by Hibernate under the hood). 
+        This framework automatically writes SQL queries for you so you don't have to.
+        It is similar to the logging: true in the nodeJs for the Development 
+
+    Explore
+        Controlling the Logs (Logging)
+            When you run your app, you see a wall of text in the console. You can change how much information Spring prints.
+            logging:
+                level:
+                    root: info                    # Standard logs for the whole app
+                    org.springframework.web: debug # Shows detailed info about incoming web requests
+        Production Monitoring (Spring Boot Actuator)
+            If you add the spring-boot-starter-actuator dependency to your project, you get built-in endpoints that 
+            let you check if your app is running healthy or view performance metrics.
+            management:
+                endpoints:
+                    web:
+                    exposure:
+                        include: "health,info,metrics" # Exposes http://localhost:8080/actuator/health
+        Custom Application Properties
+            You can also make up your own properties! This is incredibly useful for storing values you don't want 
+            to hardcode into your Java classes (like external API keys, app versions, or feature flags).
+            # You can invent your own keys like this:
+            my-app:
+                file-upload-limit: "10MB"
+                external-api-key: "xyz123abc"
+
+Repository
+    It is an automated database assistant.
+    It acts as a bridge between your Java code and the H2 database.
+    Method              What it does in H2
+    save(entity)        Inserts a new record, or updates an existing one if the primary key exists.
+    findAll()           Fetches every row from the database table (SELECT *).
+    findById(id)        Searches for a single record using its primary key.
+    existsById(id)      Checks if a record exists (returns true / false).
+    delete(entity)      Removes a record from the database.
+
+Hibernate
+    It is an Object-Relational Mapping (ORM) framework for Java.
+    It is the engine under the hood that translates Java code into SQL queries and talks to your database.
+
+SpringWebDataBase
+    Now we include the Dependency
+        Spring Web
+        Spring Web devTools
+        Spring Data JPA
+        H2 DataBase
         
-        H2 is a lightweight, invisible database that wakes up when your Spring Boot app starts, saves your data 
-        in the computer's temporary memory while you test your APIs, and disappears
-        
-            #H2 Console COnfiguration
-            h2: 
-            console: 
-                enabled: true
-                path: /h2-console
-
-            #DataBase Connection COnfiguration
-            datasource: 
-                url: jdbc:h2:mem:testdb
-                driver-class-name: org.h2.Driver
-                username: sahil
-                password: password
-
-            #Show SQL quesries in the console
-            jpa:
-                show-sql: true
-
-        console: Refers specifically to the H2 Console, which is a built-in web-based user interface used to view your tables.  
-        datasource: This section tells Spring Boot where the database is and how to log into it.
-        url: jdbc:h2:mem:testdb This is the connection string (address) of your database:
-            jdbc:h2: means use the Java Database Connectivity driver for H2.
-            :mem: means keep the database entirely in memory (RAM). (It lives and dies with the application restart).
-            :testdb is simply the name you are giving to this specific database instance.
-        driver-class-name: org.h2.Driver This tells Java the exact underlying class file it needs to load to translate 
-            Java commands into H2 database language.
-        jpa: This stands for Java Persistence API (managed by Hibernate under the hood). 
-            This framework automatically writes SQL queries for you so you don't have to.
-            It is similar to the logging: true in the nodeJs for the Development 
-        
-        Explore
-            Controlling the Logs (Logging)
-                When you run your app, you see a wall of text in the console. You can change how much information Spring prints.
-                logging:
-                    level:
-                        root: info                    # Standard logs for the whole app
-                        org.springframework.web: debug # Shows detailed info about incoming web requests
-            Production Monitoring (Spring Boot Actuator)
-                If you add the spring-boot-starter-actuator dependency to your project, you get built-in endpoints that 
-                let you check if your app is running healthy or view performance metrics.
-                management:
-                    endpoints:
-                        web:
-                        exposure:
-                            include: "health,info,metrics" # Exposes http://localhost:8080/actuator/health
-            Custom Application Properties
-                You can also make up your own properties! This is incredibly useful for storing values you don't want 
-                to hardcode into your Java classes (like external API keys, app versions, or feature flags).
-                # You can invent your own keys like this:
-                my-app:
-                    file-upload-limit: "10MB"
-                    external-api-key: "xyz123abc"
-
-
-
-
-
-

@@ -90,3 +90,12 @@ Status Codes:
         200 OK
         201 Created
         204 No Content
+
+@Entity ---> Tells Spring/Hibernate this is a Database Table
+@Id ---> Marks Primary Key 
+@GeneratedValue(strategy = GenerationType.UUID) ---> random string ID (like 550e8400-e29b-41d4-a716-446655440000)
+    GenerationType.IDENTITY ---> AUTO_INCREMENT
+    GenerationType.SEQUENCE ---> It checks whether the given ID is present in the DataBase or not then enter the data
+    GenerationType.AUTO (Default)
+    GenerationType.TABLE ---> It creates a special database table strictly to keep track of the latest IDs.
+
