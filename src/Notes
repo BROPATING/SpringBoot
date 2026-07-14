@@ -806,3 +806,94 @@ SpringWebDataBase
         repo.findById();
         repo.delete();
         repo.deleteById();
+
+SpringBootEcomV1
+    Dependencies
+        spring web
+        devTools
+        LomBok
+        JPA
+        H2
+
+    Configure the application.yaml
+        jpa: hibernate: ddl-auto: true
+
+    Integrate the backend with fontend 
+    FrontEnd
+        npx create-react-app course-frontend
+        cd course-frontend
+        npm start
+
+    make a function courseList 
+    import React, { useEffect, useState } from "react";
+
+    function CourseList() {
+        const [courses, setCourses] = useState([]);
+
+        useEffect(() => {
+            fetch("http://localhost:8080/api/v2/course")
+            .then(response => response.json())
+            .then(data => setCourses(data))
+            .catch(error => console.error("Error fetching courses:", error));
+        }, []);
+
+        return (
+            <div>
+            <h1>Courses</h1>
+            <ul>
+                {courses.map(course => (
+                <li key={course.code}>
+                    {course.name} ({course.credits} credits)
+                </li>
+                ))}
+            </ul>
+            </div>
+        );
+    }
+
+    export default CourseList;
+
+    Fetching the data in 2 ways
+
+        Using fetch (Native JavaScript API)
+            fetch("http://localhost:8080/api/v2/course", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code: "C101", name: "Java Basics", credits: 3 })
+            })
+                .then(response => response.text())
+                .then(message => alert(message))
+                .catch(error => console.error("Error:", error));
+
+        Using axios (Popular Library)
+            axios.post("http://localhost:8080/api/v2/course", {
+                code: "C101",
+                name: "Java Basics",
+                credits: 3
+            })
+                .then(response => alert(response.data))
+                .catch(error => console.error("Error:", error));
+
+    Backend
+        make the repo model controller service 
+        Model 
+            id, name, brand, avialaible, caetgory, desc, price, quantity, release_date
+        add the dummy data using the sql h2-dataBase 
+        Ok now every time want to inser the dummy data so make a file src/main/resources/
+        defaultData.sql and paste the query to it 
+        now set the application.yaml
+        spring:
+            sql:
+                init:
+                mode: always
+                data-locations: classpath:defaultData.sql
+            jpa:   
+                hibernate:
+                    ddl-auto: true  
+                        defer-datasource-initialization: true  
+                        # Wait until JPA has finished creating the schema, then run my SQL initialization scripts.
+            
+        Now go to the Controller
+        @CrossOrigin(origins = "http://localhost:5137/api/v1/course") 
+            OR
+        @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5137"})
