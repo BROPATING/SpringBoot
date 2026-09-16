@@ -40,6 +40,15 @@ function App() {
         })
         .catch(err => console.error("Error: "+err));
   }
+
+  const delProd = (id) => {
+      axios.delete(`http://localhost:8080/api/v1/prod/${id}`)
+          .then(res => {
+              console.log("Product Deleted "+ id);
+          setList(prev => prev.filter(prod => (prod.id !== id)));
+          })
+          .catch(err => console.error("Error "+err));
+  }
   
   return (
       <div style={{ padding: "20px" }}>
@@ -91,7 +100,7 @@ function App() {
         <ul>
           {list.map(product => (
               <li key={product.id}>
-                <strong>{product.name}</strong> ({product.available}) - ${product.price} [Qty: {product.quantity}]
+                <strong>{product.name}</strong> ({product.available}) - ${product.price} [Qty: {product.quantity}] <button onClick={() => delProd(product.id)}>🗑️</button>
               </li>
           ))}
         </ul>
