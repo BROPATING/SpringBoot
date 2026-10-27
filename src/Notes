@@ -897,3 +897,120 @@ SpringBootEcomV1
         @CrossOrigin(origins = "http://localhost:5137/api/v1/course") 
             OR
         @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5137"})
+
+Data Formatting with Jackson
+    The default, built-in JSON processing library used automatically by Spring Boot under the hood.
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    OR @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy"
+    private LocalDate releaseDate;
+
+    @JsonProperty("product_code") // Appears as "product_code" in JSON instead of "id"
+    private String id;
+
+Handling Images in Spring Boot + React
+    Backend (Spring Boot)
+        Accepting Files: Use @RequestPart with MultipartFile to receive both the product JSON data and the image file in a single request.
+        Saving to Disk: Use Java's Files.copy() utility to save the incoming file into a local folder (e.g., an uploads/ directory).
+        Serving Images: Create a GET endpoint that reads the file from disk by name and returns it as a byte stream (MediaType.IMAGE_JPEG_VALUE) so the browser can render it.
+        @PostMapping("/products")
+        public ResponseEntity<String> addProduct(
+                @RequestPart("product") Product product,
+                @RequestPart("imageFile") MultipartFile imageFile) {
+            try {
+                // Save image file locally or as bytes, and persist product info
+                productService.saveProductWithImage(product, imageFile);
+                return ResponseEntity.status(HttpStatus.CREATED).body("Product saved with image successfully!");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            }
+        }
+        public Product saveProductWithImage(Product product, MultipartFile imageFile) throws IOException {
+
+            if (imageFile != null && !imageFile.isEmpty()) {
+                // Attach image metadata and file bytes to the product model
+                product.setImageName(imageFile.getOriginalFilename());
+                product.setImageType(imageFile.getContentType());
+                product.setImageData(imageFile.getBytes()); // Stores the file bytes directly in the database entity
+            }
+
+            // Save the fully populated product object to the H2 database
+            return productRepo.save(product);
+        }
+
+    Frontend (React)
+        Sending Files: You cannot use regular JSON. You must use JavaScript FormData to append both text fields and the file.
+        Headers: Set the request header to Content-Type: multipart/form-data.
+        Displaying: Render the image in an HTML <img> tag by pointing the src attribute directly to your backend's image-serving URL.
+        import React, { useState } from "react";
+        import axios from "axios";
+
+        function AddProductForm() {
+            const [name, setName] = useState("");
+            const [price, setPrice] = useState("");
+            const [imageFile, setImageFile] = useState(null);
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+
+                // 1. Create FormData container
+                const formData = new FormData();
+
+                // 2. Append the image file
+                formData.append("imageFile", imageFile);
+
+                // 3. Append product data as a JSON Blob so Spring Boot can parse it with @RequestPart
+                const productJson = JSON.stringify({ name, price });
+                formData.append("product", new Blob([productJson], { type: "application/json" }));
+
+                try {
+                    // 4. Send request using Axios
+                    const response = await axios.post("http://localhost:8080/api/v1/products", formData, {
+                        headers: { "Content-Type": "multipart/form-data" }
+                    });
+                    alert(response.data);
+                } catch (error) {
+                    console.error("Upload error:", error);
+                }
+            };
+
+            return (
+                <form onSubmit={handleSubmit}>
+                    <input type="text" placeholder="Product Name" onChange={(e) => setName(e.target.value)} />
+                    <input type="number" placeholder="Price" onChange={(e) => setPrice(e.target.value)} />
+                    <input type="file" onChange={(e) => setImageFile(e.target.files[0])} />
+                    <button type="submit">Upload Product</button>
+                </form>
+            );
+        }
+
+        export default AddProductForm;
+
+        Also we need to configure in the backend about where it will store ex. src/main/resources/static/uploads/mouse-image.jpg.
+            public Product saveProductWithImage(Product product, MultipartFile imageFile) throws IOException {
+                if (imageFile != null && !imageFile.isEmpty()) {
+
+                    // 1. Create a unique filename to prevent overwriting files with the same name
+                    String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
+
+                    // 2. Ensure the "uploads" folder exists on disk
+                    Path uploadPath = Paths.get(UPLOAD_DIR);
+                    if (!Files.exists(uploadPath)) {
+                        Files.createDirectories(uploadPath);
+                    }
+
+                    // 3. Copy the file into the uploads directory
+                    Path filePath = uploadPath.resolve(fileName);
+                    Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                    // 4. Save only the filename string to the product model
+                    product.setImageName(fileName);
+                }
+
+                return productRepo.save(product);
+            }
+
+JPA Repository (Searching part)
+    JPQL
+    SQL - tables, column name
+    here - class name, field name
