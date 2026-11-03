@@ -1012,5 +1012,17 @@ Handling Images in Spring Boot + React
 
 JPA Repository (Searching part)
     JPQL
+        In JPQL, you query the Java object (Product) and its Java field (category), not the table name in H2:
+            // JPQL uses Java Class name (Product) and Java field name (category)
+                @Query("SELECT p FROM Product p WHERE p.category = :cat")
+                List<Product> searchByCategoryJPQL(@Param("cat") String category);
+
     SQL - tables, column name
-    here - class name, field name
+        If you switch nativeQuery = true, you must use your actual database table names and column names (like the ones mapped with @Column(name = "product_id")):
+        // Native SQL uses DB Table name (product) and DB Column name (product_id)
+            @Query(value = "SELECT * FROM product WHERE product_id = :id", nativeQuery = true)
+            Product searchByIdNativeSQL(@Param("id") String id);
+
+    Derived Query Methods: Spring automatically writes queries based on method names (e.g., findByCategory(String category)).
+    JPQL: Object-oriented query language built into JPA. Think Class names & Field names.
+    Native SQL: Direct database query. Think Table names & Column names.

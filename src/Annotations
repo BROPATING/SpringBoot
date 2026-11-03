@@ -99,3 +99,13 @@ Status Codes:
     GenerationType.AUTO (Default)
     GenerationType.TABLE ---> It creates a special database table strictly to keep track of the latest IDs.
 
+Here are the most common commit types to include in your notes:
+| Prefix | What it means | Example |
+| --- | --- | --- |
+| **`feat`** | Adding a **new feature** to the application. | `feat: add disk-based image upload` |
+| **`fix`** | Fixing a **bug** or error in the code. | `fix: resolve null pointer in product service` |
+| **`docs`** | Changes to **documentation** only (README, notes, comments). | `docs: update API endpoints guide` |
+| **`refactor`** | Restructuring code without changing its external behavior (not a bugfix or feature). | `refactor: extract image logic into helper` |
+| **`chore`** | Maintenance tasks, config updates, or dependency changes. | `chore: update spring boot version` |
+| **`style`** | Code style changes (formatting, missing semicolons, whitespace) that don't affect logic. | `style: format java files with standard rules` |
+| **`test`** | Adding or correcting automated tests. | `test: add unit tests for product repository` |
